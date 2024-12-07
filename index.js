@@ -14,6 +14,16 @@ const client = new Client({
 
 client.once("ready", () => {
   console.log(`Bot ${client.user.tag} is ready!`);
+  // Set status bot
+  client.user.setPresence({
+    status: "online", // Status: 'online', 'idle', 'dnd', 'invisible'
+    activities: [
+      {
+        name: "Learning Laravel", // Teks status
+        type: "PLAYING", // Jenis aktivitas: 'PLAYING', 'STREAMING', 'LISTENING', 'WATCHING'
+      },
+    ],
+  });
 });
 
 const rl = readline.createInterface({
@@ -138,12 +148,7 @@ client.on("messageCreate", (message) => {
     const targetChannel = guild.channels.cache.get("1314371530204905584"); // ganti dengan channel id yang dituju
 
     if (targetChannel) {
-      const levelUpEmbed = new EmbedBuilder()
-        .setColor(0xf7f7f7)
-        .setTitle(`> Level Up! ${message.author.username}`)
-        .setDescription(`Selamat ${message.author}, kamu naik ke level **${userData.level}**! 🎉`)
-        .setImage("https://i.ibb.co.com/Y0C1Zcw/tenor.gif")
-        .setFooter({ text: "Terus aktif untuk naik level lebih tinggi!" });
+      const levelUpEmbed = new EmbedBuilder().setColor(0xf7f7f7).setTitle(`> Level Up! ${message.author.username}`).setDescription(`Selamat ${message.author}, kamu naik ke level **${userData.level}**! 🎉`).setImage("https://i.ibb.co.com/Y0C1Zcw/tenor.gif").setFooter({ text: "Terus aktif untuk naik level lebih tinggi!" });
 
       targetChannel.send({ embeds: [levelUpEmbed] });
     } else {
@@ -160,12 +165,7 @@ client.on("messageCreate", (message) => {
           member.roles
             .add(role)
             .then(() => {
-              const roleEmbed = new EmbedBuilder()
-                .setColor(0xf7f7f7)
-                .setTitle(`> Role Awarded! ${message.author.username}`)
-                .setDescription(`${message.author}, kamu mendapatkan role **${role.name}**! 🎉`)
-                .setImage("https://i.ibb.co.com/Y0C1Zcw/tenor.gif")
-                .setFooter({ text: "Terus aktif untuk mendapatkan lebih banyak role!" });
+              const roleEmbed = new EmbedBuilder().setColor(0xf7f7f7).setTitle(`> Role Awarded! ${message.author.username}`).setDescription(`${message.author}, kamu mendapatkan role **${role.name}**! 🎉`).setImage("https://i.ibb.co.com/Y0C1Zcw/tenor.gif").setFooter({ text: "Terus aktif untuk mendapatkan lebih banyak role!" });
 
               targetChannel?.send({ embeds: [roleEmbed] });
             })
@@ -178,7 +178,6 @@ client.on("messageCreate", (message) => {
   // Simpan data
   saveLevelData();
 });
-
 
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
