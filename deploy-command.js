@@ -6,6 +6,10 @@ require("dotenv").config();
 const commands = [
   new SlashCommandBuilder().setName("level").setDescription("Tampilkan level dan XP kamu."),
   new SlashCommandBuilder()
+    .setName("level-member")
+    .setDescription("Tampilkan level dan XP member tertentu.")
+    .addUserOption((option) => option.setName("member").setDescription("Pilih member").setRequired(true)),
+  new SlashCommandBuilder()
     .setName("level-set")
     .setDescription("Setel level member tertentu")
     .addUserOption((option) => option.setName("member").setDescription("Pilih member").setRequired(true))
