@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, AttachmentBuilder } = require("discord.js");
+const { Client, GatewayIntentBits } = require("discord.js");
 require("dotenv").config();
 const readline = require("readline");
 const home = require("./home");
@@ -15,15 +15,7 @@ const client = new Client({
 client.once("ready", () => {
   console.log(`Bot ${client.user.tag} is ready!`);
   // Set status bot
-  client.user.setPresence({
-    status: "online", // Status: 'online', 'idle', 'dnd', 'invisible'
-    activities: [
-      {
-        name: "Learning Laravel", // Teks status
-        type: "PLAYING", // Jenis aktivitas: 'PLAYING', 'STREAMING', 'LISTENING', 'WATCHING'
-      },
-    ],
-  });
+  client.user.setPresence({ activities: [{ name: process.env.SET_ACTIVITY }], status: process.env.SET_STATUS });
 });
 
 const rl = readline.createInterface({
