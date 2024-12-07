@@ -4,7 +4,7 @@
   "description": "own discord bot",
   "main": "index.js",
   "scripts": {
-    "start": "node deploy-command && node index.js"
+    "start": "node deploy-command.js && node index.js"
   },
   "keywords": [
     "discord",
