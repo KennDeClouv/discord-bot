@@ -236,7 +236,7 @@ client.on("interactionCreate", async (interaction) => {
         .setTitle(`> Level info ${interaction.options.getUser("member").username}`)
         .setDescription(`**level saat ini:** ${userData.level}\n**xp saat ini:** ${userData.xp}/${levelUpXp(userData.level)}`)
         .setImage("https://i.ibb.co/Y0C1Zcw/tenor.gif");
-        // .setFooter({ text: "terus aktif untuk naikan level kamuu!" });
+      // .setFooter({ text: "terus aktif untuk naikan level kamuu!" });
 
       await interaction.reply({ embeds: [embed], ephemeral: true });
     } catch (error) {
@@ -248,66 +248,65 @@ client.on("interactionCreate", async (interaction) => {
     }
   }
 
-  const levelData = {}; // Initialize levelData
+  // const levelData = await getUserData(member.id);
 
   if (interaction.commandName === "level-set") {
-    // Setel level member tertentu
+    const userData = await getUserData(interaction.user.id);
     const level = interaction.options.getInteger("level");
     if (!level) return interaction.reply({ content: "Level harus diisi.", ephemeral: true });
 
-    levelData[member.id] = levelData[member.id] || { level: 0, xp: 0 };
-    levelData[member.id].level = level;
+    userData.level = level;
 
     await interaction.reply({
-      content: `Level ${member.username} telah diatur menjadi level ${level}.`,
+      content: `Level ${interaction.user.username} telah diatur menjadi level ${level}.`,
       ephemeral: true,
     });
-    saveUserData(member.id, levelData[member.id].xp, levelData[member.id].level, levelData[member.id].lastMessage);
+    saveUserData(interaction.user.id, userData.xp, userData.level, userData.lastMessage);
   }
 
   if (interaction.commandName === "level-add") {
-    // Tambah level member
+    // Add level to member
     const level = interaction.options.getInteger("level");
     if (!level) return interaction.reply({ content: "Level yang ditambahkan harus diisi.", ephemeral: true });
 
-    levelData[member.id] = levelData[member.id] || { level: 0, xp: 0 };
-    levelData[member.id].level += level;
+    const userData = await getUserData(interaction.user.id);
+    userData.level += level;
 
     await interaction.reply({
-      content: `Level ${member.username} telah ditambahkan ${level}. Level sekarang: ${levelData[member.id].level}.`,
+      content: `Level ${interaction.user.username} telah ditambahkan ${level}. Level sekarang: ${userData.level}.`,
       ephemeral: true,
     });
-    saveUserData(member.id, levelData[member.id].xp, levelData[member.id].level, levelData[member.id].lastMessage);
+    saveUserData(interaction.user.id, userData.xp, userData.level, userData.lastMessage);
   }
 
   if (interaction.commandName === "xp-set") {
-    // Setel XP member tertentu
+    // Set XP for a specific member
     const xp = interaction.options.getInteger("xp");
     if (!xp) return interaction.reply({ content: "XP harus diisi.", ephemeral: true });
 
-    levelData[member.id] = levelData[member.id] || { level: 0, xp: 0 };
-    levelData[member.id].xp = xp;
+    const userData = await getUserData(interaction.user.id);
+    userData.xp = xp;
 
     await interaction.reply({
-      content: `XP ${member.username} telah diatur menjadi ${xp}.`,
+      content: `XP ${interaction.user.username} telah diatur menjadi ${xp}.`,
       ephemeral: true,
     });
-    saveUserData(member.id, levelData[member.id].xp, levelData[member.id].level, levelData[member.id].lastMessage);
+    saveUserData(interaction.user.id, userData.xp, userData.level, userData.lastMessage);
   }
 
   if (interaction.commandName === "xp-add") {
-    // Tambah XP member
+    // Add XP to member
     const xp = interaction.options.getInteger("xp");
     if (!xp) return interaction.reply({ content: "XP yang ditambahkan harus diisi.", ephemeral: true });
 
-    levelData[member.id] = levelData[member.id] || { level: 0, xp: 0 };
-    levelData[member.id].xp += xp;
+    const userData = await getUserData(interaction.user.id);
+    userData.xp += xp;
 
     await interaction.reply({
-      content: `XP ${member.username} telah ditambahkan ${xp}. XP sekarang: ${levelData[member.id].xp}.`,
+      content: `XP ${interaction.user.username} telah ditambahkan ${xp}. XP sekarang: ${userData.xp}.`,
       ephemeral: true,
     });
-    saveUserData(member.id, levelData[member.id].xp, levelData[member.id].level, levelData[member.id].lastMessage);
+    saveUserData(interaction.user.id, userData.xp, userData.level, userData.lastMessage);
   }
 });
 
