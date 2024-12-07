@@ -6,6 +6,7 @@ const addroles = require("./addroles");
 const welcomerin = require("./welcomerin");
 const welcomerout = require("./welcomerout");
 const { EmbedBuilder } = require("discord.js");
+const roleInfo = require("./role-info");
 const mysql = require("mysql2");
 
 const client = new Client({
@@ -45,7 +46,7 @@ rl.on("line", (input) => {
     if (channel) {
       channel.send({
         embeds: command.embeds,
-        components: command.components,
+        components: command.components ? command.components : [],
       });
       console.log(`Message sent to channel ${command.channelId}`);
     } else {
@@ -54,8 +55,16 @@ rl.on("line", (input) => {
   }
 });
 
+rl.on("line", (input) => {
+  if (input.trim() === "rolesinfo") {
+    const channel = client.channels.cache.get("1314963411175477249");
+    channel.send({ embeds: [roleInfo.roleInfoEmbed] });
+    console.log("sent");
+  }
+});
+
 Object.values(commands).forEach((cmd) => {
-  client.on("interactionCreate", cmd.interactionHandler);
+  client.on("interactionCreate", cmd.interactionHandler ? cmd.interactionHandler : null);
 });
 
 client.on("guildMemberAdd", (member) => {
@@ -248,65 +257,59 @@ client.on("interactionCreate", async (interaction) => {
     }
   }
 
-  // const levelData = await getUserData(member.id);
+  if (interaction.commandName === "level-set" || interaction.commandName === "level-add" || interaction.commandName === "xp-set" || interaction.commandName === "xp-add") {
+    if (client.guilds.cache.get(process.env.GUILD_ID).members.cache.get(interaction.user.id).roles.cache.has("1314579201759907865")) {
+      const targetUser = interaction.options.getUser("member") || interaction.user; // Dapatkan user yang dituju
+      const userData = await getUserData(targetUser.id); // Gunakan ID dari targetUser
 
-  if (interaction.commandName === "level-set") {
-    const userData = await getUserData(interaction.user.id);
-    const level = interaction.options.getInteger("level");
-    if (!level) return interaction.reply({ content: "Level harus diisi.", ephemeral: true });
+      if (interaction.commandName === "level-set") {
+        const level = interaction.options.getInteger("level");
+        if (!level) return interaction.reply({ content: "Level harus diisi.", ephemeral: true });
 
-    userData.level = level;
+        userData.level = level;
+        await interaction.reply({
+          content: `Level ${targetUser.username} telah diatur menjadi level ${level}.`,
+          ephemeral: true,
+        });
+      }
 
-    await interaction.reply({
-      content: `Level ${interaction.user.username} telah diatur menjadi level ${level}.`,
-      ephemeral: true,
-    });
-    saveUserData(interaction.user.id, userData.xp, userData.level, userData.lastMessage);
-  }
+      if (interaction.commandName === "level-add") {
+        const level = interaction.options.getInteger("level");
+        if (!level) return interaction.reply({ content: "Level yang ditambahkan harus diisi.", ephemeral: true });
 
-  if (interaction.commandName === "level-add") {
-    // Add level to member
-    const level = interaction.options.getInteger("level");
-    if (!level) return interaction.reply({ content: "Level yang ditambahkan harus diisi.", ephemeral: true });
+        userData.level += level;
+        await interaction.reply({
+          content: `Level ${targetUser.username} telah ditambahkan ${level}. Level sekarang: ${userData.level}.`,
+          ephemeral: true,
+        });
+      }
 
-    const userData = await getUserData(interaction.user.id);
-    userData.level += level;
+      if (interaction.commandName === "xp-set") {
+        const xp = interaction.options.getInteger("xp");
+        if (!xp) return interaction.reply({ content: "XP harus diisi.", ephemeral: true });
 
-    await interaction.reply({
-      content: `Level ${interaction.user.username} telah ditambahkan ${level}. Level sekarang: ${userData.level}.`,
-      ephemeral: true,
-    });
-    saveUserData(interaction.user.id, userData.xp, userData.level, userData.lastMessage);
-  }
+        userData.xp = xp;
+        await interaction.reply({
+          content: `XP ${targetUser.username} telah diatur menjadi ${xp}.`,
+          ephemeral: true,
+        });
+      }
 
-  if (interaction.commandName === "xp-set") {
-    // Set XP for a specific member
-    const xp = interaction.options.getInteger("xp");
-    if (!xp) return interaction.reply({ content: "XP harus diisi.", ephemeral: true });
+      if (interaction.commandName === "xp-add") {
+        const xp = interaction.options.getInteger("xp");
+        if (!xp) return interaction.reply({ content: "XP yang ditambahkan harus diisi.", ephemeral: true });
 
-    const userData = await getUserData(interaction.user.id);
-    userData.xp = xp;
+        userData.xp += xp;
+        await interaction.reply({
+          content: `XP ${targetUser.username} telah ditambahkan ${xp}. XP sekarang: ${userData.xp}.`,
+          ephemeral: true,
+        });
+      }
 
-    await interaction.reply({
-      content: `XP ${interaction.user.username} telah diatur menjadi ${xp}.`,
-      ephemeral: true,
-    });
-    saveUserData(interaction.user.id, userData.xp, userData.level, userData.lastMessage);
-  }
-
-  if (interaction.commandName === "xp-add") {
-    // Add XP to member
-    const xp = interaction.options.getInteger("xp");
-    if (!xp) return interaction.reply({ content: "XP yang ditambahkan harus diisi.", ephemeral: true });
-
-    const userData = await getUserData(interaction.user.id);
-    userData.xp += xp;
-
-    await interaction.reply({
-      content: `XP ${interaction.user.username} telah ditambahkan ${xp}. XP sekarang: ${userData.xp}.`,
-      ephemeral: true,
-    });
-    saveUserData(interaction.user.id, userData.xp, userData.level, userData.lastMessage);
+      saveUserData(targetUser.id, userData.xp, userData.level, userData.lastMessage);
+    } else {
+      interaction.reply({ content: "Kamu tidak memiliki akses untuk menggunakan perintah ini.", ephemeral: true });
+    }
   }
 });
 

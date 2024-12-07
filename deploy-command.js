@@ -4,14 +4,14 @@ const { Routes } = require("discord-api-types/v10");
 require("dotenv").config();
 
 const commands = [
-  new SlashCommandBuilder().setName("level").setDescription("Tampilkan level dan XP kamu."),
+  new SlashCommandBuilder().setName("level").setDescription("Cek level kamu"),
   new SlashCommandBuilder()
     .setName("level-member")
     .setDescription("Tampilkan level dan XP member tertentu.")
     .addUserOption((option) => option.setName("member").setDescription("Pilih member").setRequired(true)),
   new SlashCommandBuilder()
     .setName("level-set")
-    .setDescription("Setel level member tertentu")
+    .setDescription("Atur level member tertentu")
     .addUserOption((option) => option.setName("member").setDescription("Pilih member").setRequired(true))
     .addIntegerOption((option) => option.setName("level").setDescription("Level yang ingin disetel").setRequired(true)),
   new SlashCommandBuilder()
@@ -35,6 +35,15 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
 (async () => {
   try {
+    console.log("Menghapus semua commands...");
+    const existingCommands = await rest.get(Routes.applicationCommands(process.env.CLIENT_ID));
+    
+    // Hapus semua commands yang ada
+    for (const command of existingCommands) {
+      await rest.delete(Routes.applicationCommand(process.env.CLIENT_ID, command.id));
+      console.log(`Command /${command.name} berhasil dihapus.`);
+    }
+
     console.log("Memulai proses deploy commands...");
     const commandData = commands.map((command) => command.toJSON());
     await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), { body: commandData });
