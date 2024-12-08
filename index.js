@@ -123,17 +123,11 @@ const saveUserData = (userId, xp, level, lastMessage) => {
 };
 
 // Konfigurasi xp dan leveling
-const xpPerMessage = Math.floor(Math.random() * (30 - 20 + 1)) + 20;
-const cooldown = 1 * 60 * 1000; // 1 minute cooldown
-const userCooldowns = new Map(); // Store cooldowns for each user
+const xpPerMessage = Math.floor(Math.random() * (30 - 20 + 1)) + 20 * process.env.XP_MULTIPLIER;
+const cooldown = process.env.COOLDOWN * 60 * 1000;
+const userCooldowns = new Map();
 const levelUpXp = (level) => level * level * 100;
-const levelRewards = {
-  1: "1314374871324561599",
-  5: "1314375062765174814",
-  10: "1314375157652914177",
-  15: "1314387090301259798",
-  20: "1314375259218251856",
-};
+const levelRewards = require("./config.json");
 
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
@@ -259,7 +253,7 @@ client.on("interactionCreate", async (interaction) => {
 
   async function getLeaderboardData() {
     try {
-      const [results] = await db.promise().query("SELECT user_id, level, xp FROM levels ORDER BY level DESC, xp DESC LIMIT 10");
+      const [results] = await db.promise().query("SELECT user_id, level, xp FROM levels ORDER BY level DESC, xp DESC LIMIT 3");
       return results;
     } catch (err) {
       console.error("Error fetching leaderboard from database:", err);
@@ -283,7 +277,7 @@ client.on("interactionCreate", async (interaction) => {
 
       const leaderboardEmbed = new EmbedBuilder()
         .setColor(0xf7f7f7)
-        .setTitle("> BEST OF 10")
+        .setTitle("> BEST OF 3")
         .setDescription(leaderboardMessage)
         .setImage("https://i.ibb.co/Y0C1Zcw/tenor.gif")
         .setFooter({ text: "terus aktif untuk naikan level kamuu!" });
