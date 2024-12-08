@@ -1,93 +1,132 @@
-# discord-bot
-# discord-bot
+# Discord Bot Leveling System  
 
-## Introduction
-This tutorial will guide you through the process of setting up and running a Discord bot using Python. By the end of this tutorial, you will have a fully functional bot that can respond to commands in a Discord server.
+## Overview  
+Discord Bot Leveling System adalah bot yang dirancang untuk memberikan pengalaman interaktif dengan sistem leveling. Pengguna akan mendapatkan XP setiap kali mereka mengirim pesan, dengan hadiah berupa role khusus setiap mencapai level tertentu.  
 
-## Prerequisites
-Before you begin, make sure you have the following:
-- A Discord account
-- A Discord server where you have permission to add a bot
-- Python 3.6 or higher installed on your computer
-- Basic knowledge of Python programming
+## Features  
+- **Leveling System**: Dapatkan XP berdasarkan aktivitas di channel.  
+- **Cooldown XP**: Batasi pemberian XP dengan jeda waktu 1 menit.  
+- **Role Rewards**: Berikan role spesial sebagai hadiah di level tertentu.  
+- **Customizable**: Konfigurasi hadiah role dan perhitungan XP sesuai kebutuhan.  
 
-## Step 1: Create a Discord Application
-1. Go to the [Discord Developer Portal](https://discord.com/developers/applications).
-2. Click on the "New Application" button.
-3. Enter a name for your application and click "Create".
-4. In the left sidebar, click on "Bot".
-5. Click the "Add Bot" button and confirm by clicking "Yes, do it!".
+## Prerequisites  
+Sebelum menjalankan bot ini, pastikan kamu sudah memiliki:  
+1. **Node.js** (Versi terbaru)  
+2. **npm** (biasanya terinstal bersama Node.js)  
+3. Token bot Discord dari [Discord Developer Portal](https://discord.com/developers/applications).  
+4. **Discord.js** library terinstal.  
 
-## Step 2: Get Your Bot Token
-1. In the "Bot" section of your application, you will see a "Token" section.
-2. Click on the "Copy" button to copy your bot token. Keep this token safe and do not share it with anyone.
+## Tutorial Instalasi Discord Bot Leveling System  
 
-## Step 3: Invite Your Bot to Your Server
-1. In the "OAuth2" section of your application, click on "URL Generator".
-2. Under "OAuth2 URL Generator", select the "bot" scope.
-3. Under "Bot Permissions", select the permissions you want your bot to have.
-4. Copy the generated URL and paste it into your browser.
-5. Select the server where you want to add the bot and click "Authorize".
+## 1. Siapkan Prasyarat  
+pastikan kamu sudah menginstal software berikut:  
+1. **Node.js**  
+   - unduh [node.js](https://nodejs.org/) dan instal di komputer kamu.  
+   - cek instalasi dengan perintah berikut di terminal:  
+     ```bash  
+     node -v  
+     npm -v  
+     ```  
+     jika versi node.js dan npm muncul, berarti instalasi berhasil.  
 
-## Step 4: Set Up Your Development Environment
-1. Create a new directory for your bot project.
-2. Open a terminal and navigate to your project directory.
-3. Create a virtual environment by running:
-   ```
-   python -m venv venv
-   ```
-4. Activate the virtual environment:
-   - On Windows:
-     ```
-     venv\Scripts\activate
-     ```
-   - On macOS and Linux:
-     ```
-     source venv/bin/activate
-     ```
-5. Install the `discord.py` library by running:
-   ```
-   pip install discord.py
-   ```
+2. **Git**  
+   - unduh dan instal [git](https://git-scm.com/).  
+   - cek instalasi dengan:  
+     ```bash  
+     git --version  
+     ```  
 
-## Step 5: Create Your Bot Script
-1. In your project directory, create a new file named `bot.py`.
-2. Open `bot.py` in your favorite text editor and add the following code:
-   ```python
-   import discord
-   from discord.ext import commands
+3. **Token Discord Bot**  
+   - buka [discord developer portal](https://discord.com/developers/applications).  
+   - klik tombol **new application**, beri nama bot, dan buat.  
+   - navigasi ke tab **bot**, klik **add bot**, lalu salin token bot.  
 
-   # Replace 'YOUR_BOT_TOKEN' with your actual bot token
-   TOKEN = 'YOUR_BOT_TOKEN'
+---
 
-   bot = commands.Bot(command_prefix='!')
+## 2. Clone Repository  
+1. buka terminal atau command prompt.  
+2. pindah ke folder tempat kamu ingin menyimpan bot:  
+   ```bash  
+   cd path/to/your/folder  
+   ```  
+3. clone repository:  
+   ```bash  
+   git clone https://github.com/KennDeClouv/discord-bot.git  
+   cd discord-bot
+   ```  
 
-   @bot.event
-   async def on_ready():
-       print(f'Logged in as {bot.user.name} ({bot.user.id})')
+---
 
-   @bot.command()
-   async def hello(ctx):
-       await ctx.send('Hello!')
+## 3. Install Dependencies  
+1. pastikan kamu berada di dalam folder bot.  
+2. jalankan perintah berikut untuk menginstal library yang dibutuhkan:  
+   ```bash  
+   npm install  
+   ```  
+3. tunggu sampai semua dependensi selesai terinstal.  
 
-   bot.run(TOKEN)
-   ```
+---
 
-## Step 6: Run Your Bot
-1. In the terminal, make sure your virtual environment is activated.
-2. Run your bot script by executing:
-   ```
-   python bot.py
-   ```
-3. You should see a message in the terminal indicating that your bot has logged in.
+## 4. Setup File Environment  
+1. buat file `.env` di folder root proyek.  
+2. tambahkan konfigurasi berikut:  
+   ```env  
+   DISCORD_TOKEN=your-bot-token  
+   GUILD_ID=your-server-id
+   CLIENT_ID=bot-application-id
+   DB_HOST=localhost
+   DB_PORT=8888
+   DB_USER=root
+   DB_PASSWORD=
+   DB_NAME=discord
 
-## Step 7: Test Your Bot
-1. Go to your Discord server and type `!hello` in a text channel.
-2. Your bot should respond with "Hello!".
+   SET_STATUS=online
+   SET_ACTIVITY=Genshin Impact
+   ```  
+   **keterangan**:  
+   - `DISCORD_TOKEN`: masukkan token bot yang sudah disalin sebelumnya.  
+   - `GUILD_ID`: klik kanan server di discord (aktifkan developer mode), lalu salin id server.  
+   - `DB_HOST`: alamat host database, biasanya 'localhost' untuk server lokal atau IP/domain untuk server remote
+   - `DB_PORT`: port database, default untuk MySQL adalah '3306'
+   - `DB_USER`: username untuk mengakses database (contoh: 'root')
+   - `DB_PASSWORD`:password untuk username database yang digunakan
+   - `DB_NAME`: nama database tempat menyimpan data bot (pastikan database sudah dibuat)
+   - `SET_STATUS`:- status bot di discord, pilih salah satu:  
+                  - 'online': aktif (default status)  
+                  - 'idle': terlihat sedang tidak aktif  
+                  - 'dnd': do not disturb (jangan ganggu)  
+                  - 'invisible': bot terlihat offline (tetap berjalan)
 
-Congratulations! You have successfully created and run a Discord bot. You can now start adding more commands and features to your bot.
+   - `SET_ACTIVITY`: aktivitas bot
 
-## Additional Resources
-- [discord.py Documentation](https://discordpy.readthedocs.io/en/stable/)
-- [Discord Developer Portal](https://discord.com/developers/applications)
-- [Python Documentation](https://docs.python.org/3/)
+---
+
+## 5. Jalankan Bot  
+1. pastikan semua konfigurasi sudah benar.  
+2. jalankan perintah berikut untuk memulai bot:  
+   ```bash  
+   node index.js  
+   ```  
+3. jika bot berhasil berjalan, akan muncul pesan seperti:  
+   ```bash  
+   Logged in as BotName#1234  
+   ```  
+
+---
+
+## 6. Undang Bot ke Server  
+1. kembali ke [discord developer portal](https://discord.com/developers/applications).  
+2. pilih aplikasi bot kamu, lalu buka tab **OAuth2** > **URL Generator**.  
+3. centang `bot` di scopes dan tambahkan permission yang dibutuhkan (misal: `Manage Roles`, `Send Messages`).  
+4. salin url yang dihasilkan, lalu buka di browser untuk mengundang bot ke server kamu.  
+
+---
+
+## 7. Tes Bot  
+1. buka server discord tempat bot sudah diundang.  
+2. kirim pesan di salah satu channel untuk melihat apakah bot mulai menghitung xp.  
+3. gunakan command `/level` untuk mengecek level kamu.  
+
+---
+
+made with 💘 by [kenndeclouv](https://kenndeclouv.rf.gd)
