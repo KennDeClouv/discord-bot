@@ -10,7 +10,7 @@ const roleInfo = require("./role-info");
 const mysql = require("mysql2");
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildPresences, GatewayIntentBits.GuildMessageReactions],
 });
 
 client.once("ready", () => {
@@ -257,7 +257,48 @@ client.on("interactionCreate", async (interaction) => {
     }
   }
 
-  if (interaction.commandName === "level-set" || interaction.commandName === "level-add" || interaction.commandName === "xp-set" || interaction.commandName === "xp-add") {
+  async function getLeaderboardData() {
+    try {
+      const [results] = await db.promise().query("SELECT user_id, level, xp FROM levels ORDER BY level DESC, xp DESC LIMIT 10");
+      return results;
+    } catch (err) {
+      console.error("Error fetching leaderboard from database:", err);
+      return [];
+    }
+  }
+
+  if (interaction.commandName === "leaderboard") {
+    try {
+      await interaction.guild.members.fetch();
+      const leaderboard = await getLeaderboardData();
+
+      const channel = interaction.client.channels.cache.get("1314371530204905584");
+      if (!leaderboard.length) {
+        return channel.send({ content: "Leaderboard kosong. Belum ada yang mengumpulkan XP." });
+      }
+
+      const leaderboardMessage = leaderboard.map((user, index) => 
+        `**#${index + 1}** <@${user.user_id}> - Level: ${user.level} - XP: ${user.xp}`
+      ).join("\n");
+
+      const leaderboardEmbed = new EmbedBuilder()
+        .setColor(0xf7f7f7)
+        .setTitle("> BEST OF 10")
+        .setDescription(leaderboardMessage)
+        .setImage("https://i.ibb.co/Y0C1Zcw/tenor.gif")
+        .setFooter({ text: "terus aktif untuk naikan level kamuu!" });
+
+      await channel.send({ embeds: [leaderboardEmbed] });
+      await interaction.reply({ content: "Leaderboard berhasil dikirim!", ephemeral: true });
+    } catch (error) {
+      console.error("Error fetching leaderboard data:", error);
+      await interaction.client.channels.cache.get("1314371530204905584").send({
+        content: "Terjadi kesalahan saat menampilkan leaderboard.",
+      });
+    }
+  }
+
+  if (interaction.commandName === "level-set" || interaction.commandName === "level-add" || interaction.commandName === "xp-set" || interaction.commandName === "xp-add" || interaction.commandName === "level-reset") {
     if (client.guilds.cache.get(process.env.GUILD_ID).members.cache.get(interaction.user.id).roles.cache.has("1314579201759907865")) {
       const targetUser = interaction.options.getUser("member") || interaction.user; // Dapatkan user yang dituju
       const userData = await getUserData(targetUser.id); // Gunakan ID dari targetUser

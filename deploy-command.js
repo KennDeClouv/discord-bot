@@ -5,6 +5,7 @@ require("dotenv").config();
 
 const commands = [
   new SlashCommandBuilder().setName("level").setDescription("Cek level kamu"),
+  new SlashCommandBuilder().setName("leaderboard").setDescription("Tampilkan leaderboard"),
   new SlashCommandBuilder()
     .setName("level-member")
     .setDescription("Tampilkan level dan XP member tertentu.")
